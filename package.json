@@ -11,7 +11,7 @@
     "build": "yarn build:module && yarn build:browser && yarn build:esm",
     "start": "webpack --watch",
     "publish_sdk": "npm run build && npm publish",
-    "prepare": "yarn build"
+   "prepare": "yarn build:module && yarn build:browser && yarn build:esm"
   },
   "keywords": [],
   "author": "SuprSend Developers",
