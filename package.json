@@ -3,7 +3,18 @@
   "version": "1.0.0",
   "description": "Embeddable inbox which can be used in website using script tag",
   "main": "dist/bundle.js",
-  "module": "dist/bundle.esm.js",
+  "module": "dist/bundle.js",
+  "source": "src/index.js",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/bundle.esm.js",
+      "require": "./dist/bundle.js"
+    }
+  },
   "scripts": {
     "build:browser": "webpack --env type=browser",
     "build:module": "webpack --env type=module",
@@ -11,7 +22,7 @@
     "build": "yarn build:module && yarn build:browser && yarn build:esm",
     "start": "webpack --watch",
     "publish_sdk": "npm run build && npm publish",
-    "prepare": "yarn build"
+   "prepare": "yarn build:module && yarn build:browser && yarn build:esm"
   },
   "keywords": [],
   "author": "SuprSend Developers",
