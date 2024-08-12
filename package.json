@@ -2,11 +2,13 @@
   "name": "harmoney-inbox",
   "version": "1.0.0",
   "description": "Embeddable inbox which can be used in website using script tag",
+  "main": "dist/bundle.js",
   "module": "dist/bundle.esm.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/bundle.esm.js"
+      "import": "./dist/bundle.esm.js",
+      "require": "./dist/bundle.js"
     }
   },
   "scripts": {
@@ -16,7 +18,7 @@
     "build": "yarn build:module && yarn build:browser && yarn build:esm",
     "start": "webpack --watch",
     "publish_sdk": "npm run build && npm publish",
-   "prepare": "yarn build:esm"
+   "prepare": "yarn build:module && yarn build:browser && yarn build:esm"
   },
   "keywords": [],
   "author": "SuprSend Developers",
