@@ -4,10 +4,7 @@
   "description": "Embeddable inbox which can be used in website using script tag",
   "main": "dist/bundle.js",
   "module": "dist/bundle.js",
-  "source": "src/index.js",
-  "files": [
-    "dist"
-  ],
+  
   "exports": {
     "./package.json": "./package.json",
     ".": {
