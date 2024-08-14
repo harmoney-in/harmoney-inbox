@@ -50,7 +50,6 @@ export function NotificationsContainer({ stores, type }) {
 
   useEffect(()=>{
     const archiveNotification = (e) => {
-      // ideally this should use n_id, but for now we are searching the url in the actions cta
       const n_id = e.detail.n_id;
       if(n_id) markArchived(n_id);
     }
