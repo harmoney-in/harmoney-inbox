@@ -1,4 +1,4 @@
-import React from "preact/compat";
+import React, { useEffect } from "preact/compat";
 import { useState } from "preact/compat";
 import styled, { keyframes } from "styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -47,6 +47,18 @@ export function NotificationsContainer({ stores, type }) {
   } = useNotifications(active);
   const unseenData = useStoresUnseenCount();
 
+
+  useEffect(()=>{
+    const archiveNotification = (e) => {
+      // ideally this should use n_id, but for now we are searching the url in the actions cta
+      const n_id = e.detail.n_id;
+      if(n_id) markArchived(n_id);
+    }
+    document.addEventListener("archive-notification",archiveNotification);
+    return () => {
+      document.removeEventListener("archive-notification",archiveNotification);
+    }
+  })
   if (initialLoading) {
     return (
       <div>

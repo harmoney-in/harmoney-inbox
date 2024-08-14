@@ -1,5 +1,6 @@
 import React from "preact/compat";
 import styled, { keyframes, css } from "styled-components";
+import UserIcon from "./UserIcon";
 
 const NOTIFICATION_TYPES = {
   improve_bid_or_buy: "improve_bid_or_buy",
@@ -16,7 +17,7 @@ export default function Notification({
 }) {
   const { message, seen_on: seenOn } = notificationData;
   const orderType = message.text.includes("BID") ? "BID" : "OFFER";
-
+const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_eoi;
   const handleArchive = () => {
     markArchived(notificationData.n_id);
   };
@@ -26,13 +27,13 @@ export default function Notification({
     }
   };
 
-  const handleActionClick = (data, url) => {
+  const handleActionClick = (data, url, n_id) => {
     // fire an event to the main app
     handleNotificationClick();
     const event = new CustomEvent("action-center", {
       detail: {
         data,
-        url,
+        url,n_id
       },
     });
     document.dispatchEvent(event);
@@ -79,8 +80,18 @@ export default function Notification({
       </Header>
       <BodyContent>
         <Details>
-          <OrderType $type={orderType}>{message.text}</OrderType>
-          <Quote>{message.subtext.text}</Quote>
+          {notificationType === NOTIFICATION_TYPES.inventory_offer_or_sell && (
+            <InventoryTag>
+             <UserIcon /> INVENTORY
+            </InventoryTag>
+          )}
+          {notificationType === NOTIFICATION_TYPES.revive_non_inventory_eoi && (
+            <ExpiredTag>
+              <UserIcon /> EXPIRED {orderType}
+            </ExpiredTag>
+          )}
+          <OrderType $orderType={orderType} $expired={expiredEoi}>{message.text}</OrderType>
+          <Quote $expired={expiredEoi} >{message.subtext.text}</Quote>
         </Details>
         <Actions>
           {message.actions?.length > 1 &&
@@ -88,7 +99,7 @@ export default function Notification({
               <ImproveButton
                 $orderType={orderType}
                 onClick={() =>
-                  handleActionClick(message, message.actions[0].url)
+                  handleActionClick(message, message.actions[0].url, notificationData.n_id)
                 }
               >
                 Improve
@@ -99,7 +110,7 @@ export default function Notification({
               <OfferButton
                 $orderType={orderType}
                 onClick={() =>
-                  handleActionClick(message, message.actions[0].url)
+                  handleActionClick(message, message.actions[0].url,notificationData.n_id)
                 }
               >
                 Offer
@@ -109,7 +120,7 @@ export default function Notification({
             message.actions[1].name === "Sell" && (
               <SellButton
                 onClick={() =>
-                  handleActionClick(message, message.actions[1].url)
+                  handleActionClick(message, message.actions[1].url,notificationData.n_id)
                 }
               >
                 Sell
@@ -117,10 +128,18 @@ export default function Notification({
             )}
           {message.actions?.length > 1 && message.actions[1].name === "Buy" && (
             <BuyButton
-              onClick={() => handleActionClick(message, message.actions[1].url)}
+              onClick={() => handleActionClick(message, message.actions[1].url, notificationData.n_id)}
             >
               Buy
             </BuyButton>
+          )}
+          {message.actions.length ===1 && message.actions[0].name === "Revive" && (
+            <ReviveButton 
+            $orderType={orderType}
+              onClick={() => handleActionClick(message, message.actions[0].url,notificationData.n_id)}
+            >
+              Revive
+            </ReviveButton>
           )}
         </Actions>
       </BodyContent>
@@ -161,6 +180,37 @@ const Container = styled.div`
 //   &:hover {
 // background-color: ${(props) => (props.read ? "#F6F6F6" : "#DFECFF")};
 // }
+
+const InventoryTag = styled.div`
+display: flex;
+height: 16px;
+padding: 4px 8px;
+align-items: center;
+gap: 4px;
+border: 1px solid #244275;
+font-size: 8px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+text-transform: uppercase;
+color: #244275;
+margin-bottom: 8px;
+`;
+const ExpiredTag = styled.div`
+display: flex;
+height: 16px;
+padding: 4px 8px;
+align-items: center;
+gap: 4px;
+border: 1px solid #808080;
+font-size: 8px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+text-transform: uppercase;
+color: #808080;
+margin-bottom: 8px;
+`;
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -173,7 +223,7 @@ const Header = styled.div`
   line-height: normal;
 `;
 const OrderType = styled.div`
-  color: ${(props) => (props.$type === "BID" ? "#059425" : "#B91338")};
+  color: ${(props) => ( props.$expired ? '#ADADAD' : props.$orderType === "BID" ? "#059425" : "#B91338")};
   font-size: 12px;
   font-style: normal;
   font-weight: 900;
@@ -195,7 +245,7 @@ const Details = styled.div`
   gap: 2px;
 `;
 const Quote = styled.div`
-  color: #333;
+  color: ${(props)=> ( props.$expired ? '#808080':'#333')};
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -255,4 +305,18 @@ const BuyButton = styled.button`
   flex-shrink: 0;
   background: #059425;
   color: #fff;
+`;
+
+const ReviveButton = styled.button`
+display: flex;
+height: 24px;
+padding: 8px;
+justify-content: center;
+align-items: center;
+border: 1px solid ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
+color: ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
+font-size: 12px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
 `;
