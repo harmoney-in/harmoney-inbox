@@ -51,7 +51,10 @@ export function NotificationsContainer({ stores, type }) {
   useEffect(()=>{
     const archiveNotification = (e) => {
       const n_id = e.detail.n_id;
-      if(n_id) markArchived(n_id);
+      if(n_id) {
+        markClicked(n_id);
+        markArchived(n_id);
+      }
     }
     document.addEventListener("archive-notification",archiveNotification);
     return () => {

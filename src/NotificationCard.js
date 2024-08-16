@@ -19,6 +19,8 @@ export default function Notification({
   const orderType = message.text.includes("BID") ? "BID" : "OFFER";
 const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_eoi;
   const handleArchive = () => {
+    // needed click event as well to remove completely
+    markClicked(notificationData.n_id);
     markArchived(notificationData.n_id);
   };
   const handleNotificationClick = () => {
@@ -264,7 +266,7 @@ const ImproveButton = styled.button`
   padding: 8px;
   justify-content: center;
   align-items: center;
-  color: ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
+  color: ${(props) => (props.$orderType === "BID" ?  "#B91338": "#059425" )};
   font-size: 12px;
   font-style: normal;
   font-weight: 600;
