@@ -98,7 +98,7 @@ export function NotificationsContainer({ stores, type }) {
       />
       {changeTab ? null : (
         <InfiniteScroll
-          scrollableTarget="ss-notification-container"
+          scrollableTarget="inbox-container"
           dataLength={notifications.length}
           next={fetchPrevious}
           hasMore={hasNext}
