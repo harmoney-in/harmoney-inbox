@@ -14,6 +14,7 @@ export default function Notification({
   notificationType,
   markClicked,
   markArchived,
+  theme
 }) {
   const { message, seen_on: seenOn } = notificationData;
   const orderType = message.text.includes("BID") ? "BID" : "OFFER";
@@ -45,13 +46,14 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
     <Container
       read={!!seenOn}
       $orderType={orderType}
+      $theme={theme}
       onClick={(e) => {
         e.stopPropagation();
         handleNotificationClick();
       }}
     >
       <Header>
-        <span>{message.header}</span>
+        <Title $theme={theme} >{message.header}</Title>
         <button onClick={handleArchive}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +76,7 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
             <g mask="url(#mask0_2701_13538)">
               <path
                 d="M4.265 12.4361L3.5625 11.7336L7.29583 8.00029L3.5625 4.26695L4.265 3.56445L7.99833 7.29779L11.7317 3.56445L12.4342 4.26695L8.70083 8.00029L12.4342 11.7336L11.7317 12.4361L7.99833 8.70279L4.265 12.4361Z"
-                fill="#244275"
+                fill={theme === "dark" ? "#666666" : "#244275"}
               />
             </g>
           </svg>
@@ -83,7 +85,7 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
       <BodyContent>
         <Details>
           {notificationType === NOTIFICATION_TYPES.inventory_offer_or_sell && (
-            <InventoryTag>
+            <InventoryTag $theme={theme}>
              <UserIcon /> INVENTORY
             </InventoryTag>
           )}
@@ -92,8 +94,8 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
               <UserIcon /> EXPIRED {orderType}
             </ExpiredTag>
           )}
-          <OrderType $orderType={orderType} $expired={expiredEoi}>{message.text}</OrderType>
-          <Quote $expired={expiredEoi} >{message.subtext.text}</Quote>
+          <OrderType $orderType={orderType} $expired={expiredEoi} $theme={theme}>{message.text}</OrderType>
+          <Quote $expired={expiredEoi} $theme={theme} >{message.subtext.text}</Quote>
         </Details>
         <Actions>
           {message.actions?.length > 1 &&
@@ -152,18 +154,30 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
 // change background color from white to D8E2F3
 const blink = keyframes`
   0% {
-    background-color: #D8E2F3;
+    background-color: #EFF3FA;
   }
   50% {
-    background-color: #FFF;
+    background-color: #EFF3FA00;
   }
   100% {
-    background-color: #D8E2F3;
+    background-color: #EFF3FA;
   }
 `;
+const blinkDark = keyframes`
+  0% {
+    background-color: #0C1627FF;
+  }
+  50% { 
+    background-color: #0C162777;
+  }
+  100% {  
+    background-color: #0C1627FF;
+  }
+`;
+// props.theme === "dark" ? blinkDark : blink
 const blinkAnimation = (props) =>
   css`
-    ${blink} 1s linear infinite;
+    ${props.$theme === "dark" ? blinkDark : blink} 1s linear infinite;
   `;
 
 const Container = styled.div`
@@ -182,20 +196,22 @@ const Container = styled.div`
 //   &:hover {
 // background-color: ${(props) => (props.read ? "#F6F6F6" : "#DFECFF")};
 // }
-
+const Title = styled.span`
+color: ${(props) => (props.$theme === "dark" ? "#999999" : "#666666")};
+`;
 const InventoryTag = styled.div`
 display: flex;
 height: 16px;
 padding: 4px 8px;
 align-items: center;
 gap: 4px;
-border: 1px solid #244275;
+border: ${(props) => (props.$theme === "dark" ? "1px solid #3C6EC3" : "1px solid #244275")};
 font-size: 8px;
 font-style: normal;
 font-weight: 600;
 line-height: normal;
 text-transform: uppercase;
-color: #244275;
+color:  ${(props) => (props.$theme === "dark" ? '#3C6EC3' : '#244275')};
 margin-bottom: 8px;
 `;
 const ExpiredTag = styled.div`
@@ -247,7 +263,7 @@ const Details = styled.div`
   gap: 2px;
 `;
 const Quote = styled.div`
-  color: ${(props)=> ( props.$expired ? '#808080':'#333')};
+  color: ${(props)=> ( props.$expired ? '#808080': props.$theme === 'dark' ?  '#EBEBEB': '#333333')};
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
