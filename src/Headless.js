@@ -14,6 +14,7 @@ export default function FullScreenNotifications({
   distinctId,
   subscriberId,
   stores,
+  theme,
 }) {
   return (
     <SuprSendProvider
@@ -23,19 +24,20 @@ export default function FullScreenNotifications({
       stores={stores}
     >
       <NotifsContainer>
-        <NotificationsContainer stores={stores} type="FULL_PAGE" />
+        <NotificationsContainer stores={stores} type="FULL_PAGE" theme={theme}/>
       </NotifsContainer>
     </SuprSendProvider>
   );
 }
 
-export function NotificationsContainer({ stores, type }) {
+export function NotificationsContainer({ stores, type , theme}) {
   const [changeTab, setChangetab] = useState(false);
   const [active, setActive] = useState(() =>
     stores && Array.isArray(stores) && stores.length > 0
       ? stores[0].storeId
       : null
   );
+  const [currentTheme, setCurrentTheme] = useState(theme);
   const {
     notifications,
     hasNext,
@@ -56,9 +58,14 @@ export function NotificationsContainer({ stores, type }) {
         markArchived(n_id);
       }
     }
+    const themeChange = (e) => {
+      setCurrentTheme(e.detail.theme);
+    }
     document.addEventListener("archive-notification",archiveNotification);
+    document.addEventListener("theme-change", themeChange);
     return () => {
       document.removeEventListener("archive-notification",archiveNotification);
+      document.removeEventListener("theme-change", themeChange);
     }
   })
   if (initialLoading) {
@@ -119,6 +126,7 @@ export function NotificationsContainer({ stores, type }) {
                 markClicked={markClicked}
                 markArchived={markArchived}
                 notificationType={notificationType}
+                theme={currentTheme}
               />
             );
           })}
