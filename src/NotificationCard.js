@@ -14,11 +14,12 @@ export default function Notification({
   notificationType,
   markClicked,
   markArchived,
-  theme
+  theme,
 }) {
   const { message, seen_on: seenOn } = notificationData;
   const orderType = message.text.includes("BID") ? "BID" : "OFFER";
-const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_eoi;
+  const expiredEoi =
+    notificationType === NOTIFICATION_TYPES.revive_non_inventory_eoi;
   const handleArchive = () => {
     // needed click event as well to remove completely
     markClicked(notificationData.n_id);
@@ -36,7 +37,8 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
     const event = new CustomEvent("action-center", {
       detail: {
         data,
-        url,n_id
+        url,
+        n_id,
       },
     });
     document.dispatchEvent(event);
@@ -53,7 +55,7 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
       }}
     >
       <Header>
-        <Title $theme={theme} >{message.header}</Title>
+        <Title $theme={theme}>{message.header}</Title>
         <button onClick={handleArchive}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +88,7 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
         <Details>
           {notificationType === NOTIFICATION_TYPES.inventory_offer_or_sell && (
             <InventoryTag $theme={theme}>
-             <UserIcon /> INVENTORY
+              <UserIcon /> INVENTORY
             </InventoryTag>
           )}
           {notificationType === NOTIFICATION_TYPES.revive_non_inventory_eoi && (
@@ -94,8 +96,16 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
               <UserIcon /> EXPIRED {orderType}
             </ExpiredTag>
           )}
-          <OrderType $orderType={orderType} $expired={expiredEoi} $theme={theme}>{message.text}</OrderType>
-          <Quote $expired={expiredEoi} $theme={theme} >{message.subtext.text}</Quote>
+          <OrderType
+            $orderType={orderType}
+            $expired={expiredEoi}
+            $theme={theme}
+          >
+            {message.text}
+          </OrderType>
+          <Quote $expired={expiredEoi} $theme={theme}>
+            {message.subtext.text}
+          </Quote>
         </Details>
         <Actions>
           {message.actions?.length > 1 &&
@@ -103,7 +113,11 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
               <ImproveButton
                 $orderType={orderType}
                 onClick={() =>
-                  handleActionClick(message, message.actions[0].url, notificationData.n_id)
+                  handleActionClick(
+                    message,
+                    message.actions[0].url,
+                    notificationData.n_id
+                  )
                 }
               >
                 Improve
@@ -114,7 +128,11 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
               <OfferButton
                 $orderType={orderType}
                 onClick={() =>
-                  handleActionClick(message, message.actions[0].url,notificationData.n_id)
+                  handleActionClick(
+                    message,
+                    message.actions[0].url,
+                    notificationData.n_id
+                  )
                 }
               >
                 Offer
@@ -124,7 +142,11 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
             message.actions[1].name === "Sell" && (
               <SellButton
                 onClick={() =>
-                  handleActionClick(message, message.actions[1].url,notificationData.n_id)
+                  handleActionClick(
+                    message,
+                    message.actions[1].url,
+                    notificationData.n_id
+                  )
                 }
               >
                 Sell
@@ -132,19 +154,32 @@ const expiredEoi = notificationType === NOTIFICATION_TYPES.revive_non_inventory_
             )}
           {message.actions?.length > 1 && message.actions[1].name === "Buy" && (
             <BuyButton
-              onClick={() => handleActionClick(message, message.actions[1].url, notificationData.n_id)}
+              onClick={() =>
+                handleActionClick(
+                  message,
+                  message.actions[1].url,
+                  notificationData.n_id
+                )
+              }
             >
               Buy
             </BuyButton>
           )}
-          {message.actions.length ===1 && message.actions[0].name === "Revive" && (
-            <ReviveButton 
-            $orderType={orderType}
-              onClick={() => handleActionClick(message, message.actions[0].url,notificationData.n_id)}
-            >
-              Revive
-            </ReviveButton>
-          )}
+          {message.actions.length === 1 &&
+            message.actions[0].name === "Revive" && (
+              <ReviveButton
+                $orderType={orderType}
+                onClick={() =>
+                  handleActionClick(
+                    message,
+                    message.actions[0].url,
+                    notificationData.n_id
+                  )
+                }
+              >
+                Revive
+              </ReviveButton>
+            )}
         </Actions>
       </BodyContent>
     </Container>
@@ -165,13 +200,13 @@ const blink = keyframes`
 `;
 const blinkDark = keyframes`
   0% {
-    background-color: #0C1627FF;
+    background-color: #182C4E;
   }
   50% { 
-    background-color: #0C162777;
+    background-color: #182C4E;
   }
   100% {  
-    background-color: #0C1627FF;
+    background-color: #182C4E;
   }
 `;
 // props.theme === "dark" ? blinkDark : blink
@@ -190,44 +225,44 @@ const Container = styled.div`
   align-self: stretch;
   border-left: 2px solid
     ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
+  border-bottom: 1px solid
+    ${(props) => (props.$theme === "dark" ? "#333333" : "#e5e5e5")};
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);
   animation: ${(props) => (props.read ? "none" : blinkAnimation)};
 `;
-//   &:hover {
-// background-color: ${(props) => (props.read ? "#F6F6F6" : "#DFECFF")};
-// }
 const Title = styled.span`
-color: ${(props) => (props.$theme === "dark" ? "#999999" : "#666666")};
+  color: ${(props) => (props.$theme === "dark" ? "#999999" : "#666666")};
 `;
 const InventoryTag = styled.div`
-display: flex;
-height: 16px;
-padding: 4px 8px;
-align-items: center;
-gap: 4px;
-border: ${(props) => (props.$theme === "dark" ? "1px solid #3C6EC3" : "1px solid #244275")};
-font-size: 8px;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
-text-transform: uppercase;
-color:  ${(props) => (props.$theme === "dark" ? '#3C6EC3' : '#244275')};
-margin-bottom: 8px;
+  display: flex;
+  height: 16px;
+  padding: 4px 8px;
+  align-items: center;
+  gap: 4px;
+  border: ${(props) =>
+    props.$theme === "dark" ? "1px solid #3C6EC3" : "1px solid #244275"};
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: uppercase;
+  color: ${(props) => (props.$theme === "dark" ? "#3C6EC3" : "#244275")};
+  margin-bottom: 8px;
 `;
 const ExpiredTag = styled.div`
-display: flex;
-height: 16px;
-padding: 4px 8px;
-align-items: center;
-gap: 4px;
-border: 1px solid #808080;
-font-size: 8px;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
-text-transform: uppercase;
-color: #808080;
-margin-bottom: 8px;
+  display: flex;
+  height: 16px;
+  padding: 4px 8px;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #808080;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: uppercase;
+  color: #808080;
+  margin-bottom: 8px;
 `;
 const Header = styled.div`
   display: flex;
@@ -241,7 +276,12 @@ const Header = styled.div`
   line-height: normal;
 `;
 const OrderType = styled.div`
-  color: ${(props) => ( props.$expired ? '#ADADAD' : props.$orderType === "BID" ? "#059425" : "#B91338")};
+  color: ${(props) =>
+    props.$expired
+      ? "#ADADAD"
+      : props.$orderType === "BID"
+      ? "#059425"
+      : "#B91338"};
   font-size: 12px;
   font-style: normal;
   font-weight: 900;
@@ -263,7 +303,12 @@ const Details = styled.div`
   gap: 2px;
 `;
 const Quote = styled.div`
-  color: ${(props)=> ( props.$expired ? '#808080': props.$theme === 'dark' ?  '#EBEBEB': '#333333')};
+  color: ${(props) =>
+    props.$expired
+      ? "#808080"
+      : props.$theme === "dark"
+      ? "#EBEBEB"
+      : "#333333"};
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -282,7 +327,7 @@ const ImproveButton = styled.button`
   padding: 8px;
   justify-content: center;
   align-items: center;
-  color: ${(props) => (props.$orderType === "BID" ?  "#B91338": "#059425" )};
+  color: ${(props) => (props.$orderType === "BID" ? "#B91338" : "#059425")};
   font-size: 12px;
   font-style: normal;
   font-weight: 600;
@@ -326,15 +371,16 @@ const BuyButton = styled.button`
 `;
 
 const ReviveButton = styled.button`
-display: flex;
-height: 24px;
-padding: 8px;
-justify-content: center;
-align-items: center;
-border: 1px solid ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
-color: ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
-font-size: 12px;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
+  display: flex;
+  height: 24px;
+  padding: 8px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid
+    ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
+  color: ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 `;
