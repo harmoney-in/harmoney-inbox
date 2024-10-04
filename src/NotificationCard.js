@@ -55,7 +55,21 @@ export default function Notification({
       }}
     >
       <Header>
-        <Title $theme={theme}>{message.header}</Title>
+        <FlexDiv>
+        <Title $theme={theme}>
+          {message.header}
+        </Title>
+        {notificationType === NOTIFICATION_TYPES.inventory_offer_or_sell && (
+            <InventoryTag $theme={theme}>
+              <UserIcon /> INVENTORY
+            </InventoryTag>
+          )}
+          {notificationType === NOTIFICATION_TYPES.revive_non_inventory_eoi && (
+            <ExpiredTag>
+              <UserIcon /> EXPIRED {orderType}
+            </ExpiredTag>
+          )}
+        </FlexDiv>
         <button onClick={handleArchive}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -86,16 +100,13 @@ export default function Notification({
       </Header>
       <BodyContent>
         <Details>
-          {notificationType === NOTIFICATION_TYPES.inventory_offer_or_sell && (
-            <InventoryTag $theme={theme}>
-              <UserIcon /> INVENTORY
-            </InventoryTag>
-          )}
-          {notificationType === NOTIFICATION_TYPES.revive_non_inventory_eoi && (
-            <ExpiredTag>
-              <UserIcon /> EXPIRED {orderType}
-            </ExpiredTag>
-          )}
+          
+          
+      <FlexDiv>
+      <Quote $expired={expiredEoi} $theme={theme}>
+            {message.subtext.text}
+          
+          </Quote>
           <OrderType
             $orderType={orderType}
             $expired={expiredEoi}
@@ -103,9 +114,7 @@ export default function Notification({
           >
             {message.text}
           </OrderType>
-          <Quote $expired={expiredEoi} $theme={theme}>
-            {message.subtext.text}
-          </Quote>
+      </FlexDiv>
         </Details>
         <Actions>
           {message.actions?.length > 1 &&
@@ -225,15 +234,13 @@ const Container = styled.div`
   align-self: stretch;
   border-left: 2px solid
     ${(props) => (props.$orderType === "BID" ? "#059425" : "#B91338")};
-  border-bottom: 1px solid
-    ${(props) => (props.$theme === "dark" ? "#333333" : "#e5e5e5")};
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);
+  border-bottom: ${(props) => (props.$theme === "dark" ? "1px solid #333333" : "1px solid #e5e5e5")};
   animation: ${(props) => (props.read ? "none" : blinkAnimation)};
 `;
 const Title = styled.span`
   color: ${(props) => (props.$theme === "dark" ? "#999999" : "#666666")};
 `;
-const InventoryTag = styled.div`
+const InventoryTag = styled.span`
   display: flex;
   height: 16px;
   padding: 4px 8px;
@@ -247,9 +254,9 @@ const InventoryTag = styled.div`
   line-height: normal;
   text-transform: uppercase;
   color: ${(props) => (props.$theme === "dark" ? "#3C6EC3" : "#244275")};
-  margin-bottom: 8px;
+  margin-bottom: 0px;
 `;
-const ExpiredTag = styled.div`
+const ExpiredTag = styled.span`
   display: flex;
   height: 16px;
   padding: 4px 8px;
@@ -262,7 +269,7 @@ const ExpiredTag = styled.div`
   line-height: normal;
   text-transform: uppercase;
   color: #808080;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
 `;
 const Header = styled.div`
   display: flex;
@@ -275,7 +282,7 @@ const Header = styled.div`
   font-weight: 500;
   line-height: normal;
 `;
-const OrderType = styled.div`
+const OrderType = styled.span`
   color: ${(props) =>
     props.$expired
       ? "#ADADAD"
@@ -301,6 +308,13 @@ const Details = styled.div`
   justify-content: center;
   align-items: flex-start;
   gap: 2px;
+`;
+const FlexDiv = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap; 
 `;
 const Quote = styled.div`
   color: ${(props) =>
